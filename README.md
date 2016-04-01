@@ -3,9 +3,9 @@
 
 ### core elements
 
- - source ,which file you want to convert from .
- - target ,the location you want the generated excel to be put into. do not provide filename entrance.the excel name will be the same with source.but with `xlsx` extension.
- - delimiter,delimiter for row fields.
+ - `source` ,which file you want to convert from .
+ - `target` ,the location you want the generated excel to be put into. do not provide filename entrance.the excel name will be the same with source.but with `xlsx` extension.
+ - `delimiter`,delimiter for row fields.
 
 
 ### how to use
