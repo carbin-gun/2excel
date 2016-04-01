@@ -1,78 +1,61 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"os"
-	"strings"
 
-	"io"
+	"fmt"
 
 	"regexp"
 
-	"path/filepath"
-
-	"github.com/tealeg/xlsx"
+	"github.com/codegangsta/cli"
 )
 
-const (
-	CSV          = "/Users/fanfu/GoProjects/src/github.com/carbin-gun/2excel/examples/tab-example.txt"
-	TargetNaming = "%s.xlsx"
-)
-
-var REG *regexp.Regexp
-
-func init() {
-	REG = regexp.MustCompile(`[\t,]`)
-}
 func main() {
-	var file *xlsx.File
-	var sheet *xlsx.Sheet
-
-	csv, err := os.Open(CSV)
-	if err != nil {
-		panic(err)
+	app := cli.NewApp()
+	app.Name = "2excel"
+	app.Usage = "convert sql export or csv file to excel with one command!"
+	app.Action = func(c *cli.Context) {
+		command := parse(c)
+		DoConvert(command)
 	}
-	defer csv.Close()
-
-	file = xlsx.NewFile()
-	sheet, err = file.AddSheet("Sheet1")
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	fmt.Println("[2excel] begin convert...")
-	buf := bufio.NewReader(csv)
-	for {
-		line, err := buf.ReadString('\n')
-		if err != nil && err != io.EOF {
-			panic(err)
-		}
-
-		//file read finished.
-		if err != nil && err == io.EOF {
-			break
-		}
-		// read going on.
-		line = strings.TrimSpace(line)
-		handleLine(sheet, line)
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "f",
+			Usage: "the file which the program will convert from",
+		},
+		cli.StringFlag{
+			Name:  "d",
+			Usage: "the delimeter of different fields of the same row.the tab or comma is support by default,you can point it out or not",
+		},
+		cli.StringFlag{
+			Name:  "t",
+			Usage: "the target directory the excel will be generated at,the default is current dir.",
+		},
 	}
 
-	basename := filepath.Base(csv.Name())
-	basenameAndExtension := strings.Split(basename, ".")
-	target := fmt.Sprintf(TargetNaming, basenameAndExtension[0])
-	err = file.Save(target)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	fmt.Println("[2excel] xlsx file OK:", target)
+	app.Run(os.Args)
 }
 
-func handleLine(sheet *xlsx.Sheet, line string) {
-	items := REG.Split(line, -1)
-	//items := strings.Split(line, "\t")
-	row := sheet.AddRow()
-	for _, item := range items {
-		cell := row.AddCell()
-		cell.Value = item
+func parse(c *cli.Context) Command {
+	source := c.String("f")
+	targetDir := c.String("t")
+	delimiter := c.String("d")
+	if delimiter != "" {
+		delimiter = regexp.QuoteMeta(delimiter)
 	}
+	fmt.Println("args:", c.Args())
+	if source == "" {
+		if len(c.Args()) != 1 {
+			panic("please provide the file you need to process. ")
+		}
+		source = c.Args()[0]
+	}
+
+	command := Command{
+		SourceFile: source,
+		Delimiter:  delimiter,
+		Dest:       targetDir,
+	}
+	return command
+
 }
