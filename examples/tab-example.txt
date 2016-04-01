@@ -1,0 +1,4 @@
+name	age	height	income
+Charles	30	175	30000
+Benny	22	168	239999
+Ben	32	179	349999

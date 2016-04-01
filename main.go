@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	CSV          = "/Users/fanfu/query_result.txt"
+	CSV          = "/Users/fanfu/GoProjects/src/github.com/carbin-gun/2excel/examples/tab-example.txt"
 	TargetNaming = "%s.xlsx"
 )
 
@@ -69,6 +69,7 @@ func main() {
 
 func handleLine(sheet *xlsx.Sheet, line string) {
 	items := REG.Split(line, -1)
+	fmt.Printf("len:%d,items:%v\n", len(items), items)
 	//items := strings.Split(line, "\t")
 	row := sheet.AddRow()
 	for _, item := range items {
