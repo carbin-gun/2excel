@@ -10,8 +10,13 @@ import (
 	"github.com/codegangsta/cli"
 )
 
+const Version = "1.0.0"
+
 func main() {
 	app := cli.NewApp()
+	app.Version = Version
+	app.Author = "carbin-gun"
+	app.Email = "cilendeng@gmail.com"
 	app.Name = "2excel"
 	app.Usage = "convert sql export or csv file to excel with one command!"
 	app.Action = func(c *cli.Context) {
