@@ -48,14 +48,20 @@ func parse(c *cli.Context) Command {
 	if delimiter != "" {
 		delimiter = regexp.QuoteMeta(delimiter)
 	}
-	fmt.Println("args:", c.Args())
+	args := c.Args()
+	fmt.Println("args:", args)
 	if source == "" {
-		if len(c.Args()) != 1 {
+		if len(args) < 1 {
 			panic("please provide the file you need to process. ")
 		}
 		source = c.Args()[0]
 	}
 
+	if targetDir == "" {
+		if len(args) == 2 {
+			targetDir = args[1]
+		}
+	}
 	command := Command{
 		SourceFile: source,
 		Delimiter:  delimiter,
