@@ -69,7 +69,6 @@ func main() {
 
 func handleLine(sheet *xlsx.Sheet, line string) {
 	items := REG.Split(line, -1)
-	fmt.Printf("len:%d,items:%v\n", len(items), items)
 	//items := strings.Split(line, "\t")
 	row := sheet.AddRow()
 	for _, item := range items {
