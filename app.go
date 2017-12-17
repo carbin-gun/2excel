@@ -43,6 +43,12 @@ func DoConvert(command Command) {
 	}
 	fmt.Println("[2excel] begin convert...")
 	buf := bufio.NewReader(csv)
+	var myReg = new(MyReg)
+	if command.Delimiter == "" {
+		myReg.Reg = REG
+	} else {
+		myReg.Reg = regexp.MustCompile(command.Delimiter)
+	}
 	for {
 		line, err := buf.ReadString('\n')
 		if err != nil && err != io.EOF {
@@ -55,7 +61,7 @@ func DoConvert(command Command) {
 		}
 		// read going on.
 		line = strings.TrimSpace(line)
-		handleLine(sheet, line, command)
+		myReg.handleLine(sheet, line, command)
 	}
 
 	basename := filepath.Base(csv.Name())
@@ -67,19 +73,19 @@ func DoConvert(command Command) {
 		fmt.Printf(err.Error())
 	}
 	fmt.Println("[2excel] xlsx file OK:", fileToSave)
+
 }
 
 func buildSaveLocation(dir, filename string) string {
 	return filepath.Join(dir, filename)
 }
 
-func handleLine(sheet *xlsx.Sheet, line string, command Command) {
-	var items []string
-	if command.Delimiter == "" {
-		items = REG.Split(line, -1)
-	} else {
-		items = regexp.MustCompile(command.Delimiter).Split(line, -1)
-	}
+type MyReg struct {
+	Reg *regexp.Regexp
+}
+
+func (m *MyReg) handleLine(sheet *xlsx.Sheet, line string, command Command) {
+	items := m.Reg.Split(line, -1)
 	row := sheet.AddRow()
 	for _, item := range items {
 		cell := row.AddCell()
