@@ -7,7 +7,7 @@ import (
 
 	"regexp"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 const Version = "1.0.0"
